@@ -171,7 +171,7 @@ namespace Mapbox.BaseModule.Map
         /// <summary>
         /// Map redraw method, which we currently use on-demand, to recalculate the tile cover and run map visualizer on it.
         /// </summary>
-        private void RedrawMap(IMapInformation mapInfo = null)
+        public void RedrawMap(IMapInformation mapInfo = null)
         {
             MapService.TileCover(mapInfo ?? MapInformation, TileCover);
             MapVisualizer.Load(TileCover);

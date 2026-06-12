@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using Cysharp.Threading.Tasks;
 using Mapbox.BaseModule.Data.Tasks;
 using UnityEngine;
 using UnityEngine.Android;
@@ -9,11 +10,10 @@ namespace Mapbox.BaseModule.Unity
     [Serializable]
     public class UnityContext
     {
-        public Action LocationPermissionStateChanged;
+       // public Action LocationPermissionStateChanged;
 
         public TaskManager TaskManager;
-        public LocationPermissionState LocationPermissionState = LocationPermissionState.Waiting;
-        [NonSerialized] public MonoBehaviour CoroutineStarter;
+        //public LocationPermissionState LocationPermissionState = LocationPermissionState.Waiting;
 
         [Tooltip("Root object to hold all map related game objects")]
         public Transform MapRoot;
@@ -24,10 +24,9 @@ namespace Mapbox.BaseModule.Unity
         [Tooltip("Root object for all runtime generated visuals. Mainly the vector feature visuals.")]
         public Transform RuntimeGenerationRoot;
 
+       // private LocationPermissionHandler _locationPermissionHandler = new();
 
-        private LocationPermissionHandler _locationPermissionHandler = new();
-
-        public IEnumerator Initialize(TaskManager providedTaskManager = null)
+        public void Initialize(TaskManager providedTaskManager = null)
         {
             if (TaskManager == null)
             {
@@ -54,7 +53,6 @@ namespace Mapbox.BaseModule.Unity
             RuntimeGenerationRoot.SetParent(MapRoot, worldPositionStays: false);
             RuntimeGenerationRoot.transform.localPosition = Vector3.zero;
             RuntimeGenerationRoot.transform.localRotation = Quaternion.identity;
-            yield return null;
         }
 
         public void OnDestroy()
@@ -62,143 +60,143 @@ namespace Mapbox.BaseModule.Unity
             TaskManager.OnDestroy();
         }
 
-        public IEnumerator HandlePermission()
-        {
-            yield return _locationPermissionHandler.HandlePermission();
-            LocationPermissionState = _locationPermissionHandler.State;
-            LocationPermissionStateChanged?.Invoke();
-        }
+        //public IEnumerator HandlePermission()
+        //{
+        //    yield return _locationPermissionHandler.HandlePermission();
+        //    LocationPermissionState = _locationPermissionHandler.State;
+        //    LocationPermissionStateChanged?.Invoke();
+        //}
     }
 
-    public enum LocationPermissionState
-    {
-        Waiting,
-        Granted,
-        Denied,
-        DeniedPermanently
-    }
+//    public enum LocationPermissionState
+//    {
+//        Waiting,
+//        Granted,
+//        Denied,
+//        DeniedPermanently
+//    }
 
-    public class LocationPermissionHandler
-    {
-        public LocationPermissionState State = LocationPermissionState.Waiting;
+//    public class LocationPermissionHandler
+//    {
+//        public LocationPermissionState State = LocationPermissionState.Waiting;
 
-        public IEnumerator HandlePermission()
-        {
-            if (Permission.HasUserAuthorizedPermission(Permission.FineLocation))
-            {
-                State = LocationPermissionState.Granted;
-                yield break;
-            }
+//        public IEnumerator HandlePermission()
+//        {
+//            if (Permission.HasUserAuthorizedPermission(Permission.FineLocation))
+//            {
+//                State = LocationPermissionState.Granted;
+//                yield break;
+//            }
 
-#if UNITY_ANDROID && !UNITY_EDITOR
-			yield return RequestLocationPermissionIfNeeded();
-#elif UNITY_IOS && !UNITY_EDITOR
-			if (!Input.location.isEnabledByUser)
-			{
-				yield return iOSAskPermission();
-			}
-#elif UNITY_EDITOR
-            // Editor / non-Android: assume granted
-            OnPermissionGranted();
-#endif
-        }
+//#if UNITY_ANDROID && !UNITY_EDITOR
+//			yield return RequestLocationPermissionIfNeeded();
+//#elif UNITY_IOS && !UNITY_EDITOR
+//			if (!Input.location.isEnabledByUser)
+//			{
+//				yield return iOSAskPermission();
+//			}
+//#elif UNITY_EDITOR
+//            // Editor / non-Android: assume granted
+//            OnPermissionGranted();
+//#endif
+//        }
 
-#if UNITY_IOS && !UNITY_EDITOR
-		public IEnumerator iOSAskPermission()
-		{
-			Input.location.Start();
+//#if UNITY_IOS && !UNITY_EDITOR
+//		public IEnumerator iOSAskPermission()
+//		{
+//			Input.location.Start();
 				
-			int waitTime = 10;
-			while (Input.location.status == LocationServiceStatus.Initializing && waitTime > 0)
-			{
-				yield return new WaitForSeconds(1);
-				waitTime--;
-			}
+//			int waitTime = 10;
+//			while (Input.location.status == LocationServiceStatus.Initializing && waitTime > 0)
+//			{
+//				yield return new WaitForSeconds(1);
+//				waitTime--;
+//			}
 
-			if (waitTime <= 0)
-			{
-				Debug.LogWarning("Location service init timeout");
-				OnPermissionDenied();
-				yield break;
-			}
+//			if (waitTime <= 0)
+//			{
+//				Debug.LogWarning("Location service init timeout");
+//				OnPermissionDenied();
+//				yield break;
+//			}
 
-			if (Input.location.status == LocationServiceStatus.Failed)
-			{
-				Debug.LogWarning("Location service failed (likely denied)");
-				OnPermissionDenied();
-				yield break;
-			}
+//			if (Input.location.status == LocationServiceStatus.Failed)
+//			{
+//				Debug.LogWarning("Location service failed (likely denied)");
+//				OnPermissionDenied();
+//				yield break;
+//			}
 
-			OnPermissionGranted();
-		}
-#endif
+//			OnPermissionGranted();
+//		}
+//#endif
 
-#if UNITY_ANDROID
-        private IEnumerator RequestLocationPermissionIfNeeded()
-        {
-            var permissionDone = false;
-            var callbacks = new PermissionCallbacks();
-            callbacks.PermissionGranted += permission =>
-            {
-                if (permission == Permission.FineLocation)
-                {
-                    permissionDone = true;
-                    OnPermissionGranted();
-                }
-            };
+//#if UNITY_ANDROID
+//        private IEnumerator RequestLocationPermissionIfNeeded()
+//        {
+//            var permissionDone = false;
+//            var callbacks = new PermissionCallbacks();
+//            callbacks.PermissionGranted += permission =>
+//            {
+//                if (permission == Permission.FineLocation)
+//                {
+//                    permissionDone = true;
+//                    OnPermissionGranted();
+//                }
+//            };
 
-            callbacks.PermissionDenied += permission =>
-            {
+//            callbacks.PermissionDenied += permission =>
+//            {
 
-                if (permission == Permission.FineLocation)
-                {
-                    permissionDone = true;
-                    OnPermissionDenied();
-                }
-            };
+//                if (permission == Permission.FineLocation)
+//                {
+//                    permissionDone = true;
+//                    OnPermissionDenied();
+//                }
+//            };
 
-            callbacks.PermissionDeniedAndDontAskAgain += permission =>
-            {
-                if (permission == Permission.FineLocation)
-                {
-                    permissionDone = true;
-                    OnPermissionDeniedPermanently();
-                }
-            };
-            Permission.RequestUserPermission(Permission.FineLocation, callbacks);
+//            callbacks.PermissionDeniedAndDontAskAgain += permission =>
+//            {
+//                if (permission == Permission.FineLocation)
+//                {
+//                    permissionDone = true;
+//                    OnPermissionDeniedPermanently();
+//                }
+//            };
+//            Permission.RequestUserPermission(Permission.FineLocation, callbacks);
 
-            float elapsed = 0f;
-            const float timeout = 60f;
-            while (!permissionDone)
-            {
-                elapsed += Time.unscaledDeltaTime;
-                if (elapsed >= timeout)
-                {
-                    Debug.LogWarning("Location permission request timed out — no callback received.");
-                    OnPermissionDenied();
-                    yield break;
-                }
-                yield return null;
-            }
-        }
-#endif
+//            float elapsed = 0f;
+//            const float timeout = 60f;
+//            while (!permissionDone)
+//            {
+//                elapsed += Time.unscaledDeltaTime;
+//                if (elapsed >= timeout)
+//                {
+//                    Debug.LogWarning("Location permission request timed out — no callback received.");
+//                    OnPermissionDenied();
+//                    yield break;
+//                }
+//                yield return null;
+//            }
+//        }
+//#endif
 
-        private void OnPermissionGranted()
-        {
-            State = LocationPermissionState.Granted;
-            Debug.Log("Location permission GRANTED");
-        }
+//        private void OnPermissionGranted()
+//        {
+//            State = LocationPermissionState.Granted;
+//            Debug.Log("Location permission GRANTED");
+//        }
 
-        private void OnPermissionDenied()
-        {
-            State = LocationPermissionState.Denied;
-            Debug.Log("Location permission denied");
-        }
+//        private void OnPermissionDenied()
+//        {
+//            State = LocationPermissionState.Denied;
+//            Debug.Log("Location permission denied");
+//        }
 
-        private void OnPermissionDeniedPermanently()
-        {
-            State = LocationPermissionState.DeniedPermanently;
-            Debug.LogWarning("Location permission denied permanently. User must enable location in system settings.");
-        }
-    }
+//        private void OnPermissionDeniedPermanently()
+//        {
+//            State = LocationPermissionState.DeniedPermanently;
+//            Debug.LogWarning("Location permission denied permanently. User must enable location in system settings.");
+//        }
+//    }
 }

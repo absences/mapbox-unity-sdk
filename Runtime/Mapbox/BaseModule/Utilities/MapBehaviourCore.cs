@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using Cysharp.Threading.Tasks;
 using Mapbox.BaseModule.Map;
 using UnityEngine;
 
@@ -16,9 +17,9 @@ namespace Mapbox.BaseModule.Utilities
                                                                 : InitializationStatus.WaitingForInitialization;
         public Action<MapboxMap> Initialized = (m) => { };
 
-        public virtual IEnumerator Initialize()
+        public virtual UniTask Initialize()
         {
-            yield return null;
+            return UniTask.CompletedTask;
         }
     }
 }

@@ -65,7 +65,7 @@ namespace Mapbox.BaseModule.Unity
             if (ImageData == null)
                 return null;
 
-            _unityMapTile.PropertyBlock.SetTexture(MainTex, Texture2D.blackTexture);
+            _unityMapTile.PropertyBlock.SetTexture(MainTex, Texture2D.whiteTexture);
             _unityMapTile.ApplyPropertyBlock();
             var rd = ImageData;
             ImageData.RemoveDisposeCallback(_onDispose);

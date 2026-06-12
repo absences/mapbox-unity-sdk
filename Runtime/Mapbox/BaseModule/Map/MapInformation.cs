@@ -4,6 +4,7 @@ using Mapbox.BaseModule.Data.Tiles;
 using Mapbox.BaseModule.Data.Vector2d;
 using Mapbox.BaseModule.Utilities;
 using Mapbox.BaseModule.Utilities.Attributes;
+using R3;
 using UnityEngine;
 
 namespace Mapbox.BaseModule.Map
@@ -84,8 +85,9 @@ namespace Mapbox.BaseModule.Map
             get => _zoom;
             private set => _zoom = value;
         }
-        public Vector2d CenterMercator => _centerMercator;
-        
+        Vector2d IMapInformation.CenterMercator => _centerMercator;
+
+        public ReactiveProperty<Vector2d> CenterMercatorR = new ReactiveProperty<Vector2d>();
         //METHODS
         public virtual float GetScaleFor(float zoomValue) => _scale;
 
@@ -96,6 +98,7 @@ namespace Mapbox.BaseModule.Map
             _latitudeLongitude = latlng;
             _latitudeLongitudeString = _latitudeLongitude.ToString();
             _centerMercator = Conversions.LatitudeLongitudeToWebMercator(LatitudeLongitude);
+            CenterMercatorR.Value = _centerMercator;
             LatitudeLongitudeChanged?.Invoke(this);
         }
 
@@ -124,6 +127,9 @@ namespace Mapbox.BaseModule.Map
 
         public Func<CanonicalTileId, float, float, float> QueryElevation { get; set; }
         public TerrainInfo Terrain { get; } = new TerrainInfo();
+
+  
+
         public event Action<IMapInformation> SetView = (t) => {};
         public event Action<IMapInformation> ViewChanged = (t) => {};
         public event Action<IMapInformation> LatitudeLongitudeChanged = (t) => {};

@@ -7,19 +7,16 @@ using Mapbox.BaseModule.Data.Platform;
 using Mapbox.BaseModule.Data.Platform.Cache;
 using Mapbox.BaseModule.Data.Platform.Cache.SQLiteCache;
 using Mapbox.BaseModule.Map;
-using Mapbox.BaseModule.Telemetry;
 using Mapbox.BaseModule.Unity;
 using Mapbox.BaseModule.Utilities;
 using Mapbox.UnityMapService.DataSources;
-using Mapbox.UnityMapService.TileProviders;
-using UnityEngine;
 using TerrainData = Mapbox.BaseModule.Data.DataFetchers.TerrainData;
 
 namespace Mapbox.UnityMapService
 {
 	public sealed class MapUnityService : MapService, IUnityMapService
 	{
-		private ITelemetryLibrary _telemetryLibrary;
+		//private ITelemetryLibrary _telemetryLibrary;
 		private TileProvider _tileProvider;
 		private MapboxCacheManager _cacheManager;
 		private DataFetchingManager _fetchingManager;

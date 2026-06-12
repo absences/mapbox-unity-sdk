@@ -105,7 +105,7 @@ namespace MapboxUnitySDK.Editor
 		static void OpenWindow()
 		{
 			_mapboxContext = new MapboxContext();
-			_mapboxContext.LoadConfigurationCoroutine(false).MoveNext();
+			_mapboxContext.LoadConfigurationCoroutine();
 			EditorApplication.delayCall -= OpenWindow;
 			instance = GetWindow(typeof(MapboxConfigurationWindow)) as MapboxConfigurationWindow;
 			instance.minSize = new Vector2(800, 180);
@@ -132,7 +132,7 @@ namespace MapboxUnitySDK.Editor
 			_mapboxContext.ValidateToken(() =>
 			{
 				WriteConfigFile(_mapboxContext.Configuration, _configurationFilePath);
-				Debug.Log(_mapboxContext.TokenStatus());
+				//Debug.Log(_mapboxContext.TokenStatus());
 			});
 		}
 
@@ -283,18 +283,18 @@ namespace MapboxUnitySDK.Editor
 			else
 			{
 				//_accessToken is being validated
-				if (_mapboxContext.TokenStatus() == MapboxTokenStatus.TokenValid)
-				{
-					GUI.backgroundColor = _validBackgroundColor;
-					GUI.contentColor = _validContentColor;
+				//if (_mapboxContext.TokenStatus() == MapboxTokenStatus.TokenValid)
+				//{
+				//	GUI.backgroundColor = _validBackgroundColor;
+				//	GUI.contentColor = _validContentColor;
 
-					_mapboxContext.Configuration.AccessToken = EditorGUILayout.TextField("", _mapboxContext.Configuration.AccessToken, _textFieldStyle);
+				//	_mapboxContext.Configuration.AccessToken = EditorGUILayout.TextField("", _mapboxContext.Configuration.AccessToken, _textFieldStyle);
 
-					GUI.contentColor = _defaultContentColor;
-					GUI.backgroundColor = _defaultBackgroundColor;
-				}
-				//_accessToken is a new, unsubmitted token.
-				else
+				//	GUI.contentColor = _defaultContentColor;
+				//	GUI.backgroundColor = _defaultBackgroundColor;
+				//}
+				////_accessToken is a new, unsubmitted token.
+				//else
 				{
 					_mapboxContext.Configuration.AccessToken = EditorGUILayout.TextField("", _mapboxContext.Configuration.AccessToken, _textFieldStyle);
 				}
